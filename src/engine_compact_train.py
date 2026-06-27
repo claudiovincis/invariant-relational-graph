@@ -13,30 +13,30 @@ class CompactEngineTrain(CompactEngine):
         self._dedup = set()  # (src, rel, dst) per O(1) dedup
         self._dirty_nodes = set()  # nodi con out_idx da aggiornare
     
-    def add(self, src_etichetta, rel_nome, dst_etichetta):
+    def add(self, src_label, rel_name, dst_label):
         """Aggiunge un arco src --[rel]--> dst. O(1) dedup."""
         # Trova/crea ID
-        if isinstance(src_etichetta, str):
-            src = self._id_from_label.get(("ita", src_etichetta))
+        if isinstance(src_label, str):
+            src = self._id_from_label.get(("ita", src_label))
             if src is None:
                 src = self._next_id
                 self._next_id += 1
-                self._labels[src] = ("ita", src_etichetta)
-                self._id_from_label[("ita", src_etichetta)] = src
+                self._labels[src] = ("ita", src_label)
+                self._id_from_label[("ita", src_label)] = src
         else:
-            src = src_etichetta
+            src = src_label
         
-        if isinstance(dst_etichetta, str):
-            dst = self._id_from_label.get(("ita", dst_etichetta))
+        if isinstance(dst_label, str):
+            dst = self._id_from_label.get(("ita", dst_label))
             if dst is None:
                 dst = self._next_id
                 self._next_id += 1
-                self._labels[dst] = ("ita", dst_etichetta)
-                self._id_from_label[("ita", dst_etichetta)] = dst
+                self._labels[dst] = ("ita", dst_label)
+                self._id_from_label[("ita", dst_label)] = dst
         else:
-            dst = dst_etichetta
+            dst = dst_label
         
-        rel = self._rel_id(rel_nome) if isinstance(rel_nome, str) else rel_nome
+        rel = self._rel_id(rel_name) if isinstance(rel_name, str) else rel_name
         
         # Dedup
         key = (src, rel, dst)
@@ -103,7 +103,7 @@ class CompactEngineTrain(CompactEngine):
         # Costruisci string table
         strings = []
         str_idx = {}
-        def _aggiungi_str(s):
+        def _add_str(s):
             if s not in str_idx:
                 str_idx[s] = len(strings)
                 strings.append(s)
@@ -133,13 +133,13 @@ class CompactEngineTrain(CompactEngine):
                 
                 f.write(struct.pack("<I", len(edges)))
                 for r_id, dests in edges.items():
-                    r_nome = self._rel_name(r_id)
-                    r_str_id = _aggiungi_str(r_nome)
+                    r_name = self._rel_name(r_id)
+                    r_str_id = _add_str(r_name)
                     f.write(struct.pack("<II", r_str_id, len(dests)))
                     for d, fl in dests:
                         f.write(struct.pack("<IB", d, fl))
             
-            # Etichette (TUTTE, anche nodi senza edges uscenti)
+            # Labels (ALL, anche nodi senza edges uscenti)
             et_flat = []
             for nid, (lang, testo) in self._labels.items():
                 et_flat.append((nid, lang, testo))
@@ -147,8 +147,8 @@ class CompactEngineTrain(CompactEngine):
             f.write(struct.pack("<I", len(et_flat)))
             for nid, lang, testo in et_flat:
                 f.write(struct.pack("<I", nid))
-                lang_id = _aggiungi_str(lang)
-                testo_id = _aggiungi_str(testo)
+                lang_id = _add_str(lang)
+                testo_id = _add_str(testo)
                 f.write(struct.pack("<II", lang_id, testo_id))
             
             # String table

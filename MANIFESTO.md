@@ -29,7 +29,7 @@ This report presents the Invariant Relational Graph (IRG), a deterministic knowl
    - [4.1 Context Subtracts, It Does Not Add](#41-context-subtracts-it-does-not-add)
    - [4.2 Context as Anchor: Solving Combinatorial Explosion](#42-context-as-anchor-solving-combinatorial-explosion)
 5. [The Algorithm](#5-the-algorithm)
-6. [Structure: The Invariant Relational Graph](#6-structure-the-growing-relational-graph)
+6. [Structure: The Invariant Relational Graph](#6-structure-the-invariant-relational-graph)
 7. [Emergent Properties](#7-emergent-properties)
    - [7.3 Topological Honesty](#73-topological-honesty)
 8. [Comparison with Large Language Models](#8-comparison-with-large-language-models)

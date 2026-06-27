@@ -29,7 +29,7 @@ class CompactEngine:
         self._out_idx = {}    # nid → (start, end) in _src
         self._in_idx = {}     # nid → (start, end) in _src_in
         
-        # Etichette
+        # labels
         self._labels = {}  # nid → (lang, testo)
         self._id_from_label = {}  # (lang, testo) → nid
         
@@ -54,7 +54,7 @@ class CompactEngine:
             n_nodi = struct.unpack("<I", f.read(4))[0]
             print(f'  [1/4] {n_nodi:,} nodi, skip...', flush=True)
             
-            # === PASSATA 1: salta nodi, leggi etichette + strings ===
+            # === PASSATA 1: salta nodi, leggi labels + strings ===
             for i in range(n_nodi):
                 f.read(4)  # nid
                 n_archi = struct.unpack("<I", f.read(4))[0]
@@ -65,15 +65,15 @@ class CompactEngine:
                 if (i+1) % 100000 == 0:
                     print(f'    skip {i+1:,}/{n_nodi:,}', flush=True)
             
-            # Etichette raw
-            n_etichette = struct.unpack("<I", f.read(4))[0]
-            print(f'  [2/4] {n_etichette:,} etichette...', flush=True)
-            etichette_raw = []
-            for _ in range(n_etichette):
+            # labels raw
+            n_labels = struct.unpack("<I", f.read(4))[0]
+            print(f'  [2/4] {n_labels:,} labels...', flush=True)
+            labels_raw = []
+            for _ in range(n_labels):
                 nid = struct.unpack("<I", f.read(4))[0]
                 lang_id = struct.unpack("<I", f.read(4))[0]
                 testo_id = struct.unpack("<I", f.read(4))[0]
-                etichette_raw.append((nid, lang_id, testo_id))
+                labels_raw.append((nid, lang_id, testo_id))
             
             # String table
             n_str = struct.unpack("<I", f.read(4))[0]
@@ -82,14 +82,14 @@ class CompactEngine:
                 l = struct.unpack("<H", f.read(2))[0]
                 strings.append(f.read(l))
             
-            print(f'    risoluzione etichette...', flush=True)
-            # Risolvi etichette
-            for nid, lang_id, testo_id in etichette_raw:
+            print(f'    risoluzione labels...', flush=True)
+            # Risolvi labels
+            for nid, lang_id, testo_id in labels_raw:
                 lang = strings[lang_id].decode("utf-8")
                 testo = strings[testo_id].decode("utf-8")
                 self._labels[nid] = (lang, testo)
                 self._id_from_label[(lang, testo)] = nid
-            del etichette_raw
+            del labels_raw
             
             for nid, (lang, testo) in self._labels.items():
                 if lang == "sys" and testo == "sistema":

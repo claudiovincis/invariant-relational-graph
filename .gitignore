@@ -216,3 +216,11 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# IRG — graph data files (binary training data)
+*.irgn
+*.grcn
+
+# Virtual environment
+.venv/
+venv/

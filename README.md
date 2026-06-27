@@ -1,4 +1,4 @@
-# Growing Relational Graph (IRG)
+# Invariant Relational Graph (IRG)
 
 **Reasoning by subtraction, not by accumulation.**
 

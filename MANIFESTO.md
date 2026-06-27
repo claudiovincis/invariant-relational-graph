@@ -1,6 +1,6 @@
 # The Invariant is the Concept
 
-> *A Technical Report on the Growing Relational Graph — reasoning by subtraction, not by accumulation.*
+> *A Technical Report on the Invariant Relational Graph — reasoning by subtraction, not by accumulation.*
 
 **Claudio Vincis** — June 27, 2026 (work in progress)
 
@@ -8,7 +8,7 @@
 
 ## Abstract
 
-This report presents the Growing Relational Graph (IRG), a deterministic knowledge system where concepts emerge not from statistical accumulation but from topological subtraction. The core thesis: a concept is what remains invariant when you change the subject that observes it through the same relation. This is implemented as a pure count — `invariance(target) = len(incoming[target])` — with no embeddings, no probabilities, no weights. The system answers queries by intersecting neighborhoods in O(deg(A)+deg(B)), avoiding the combinatorial explosion of pathfinding. Architectural honesty is guaranteed by an adaptive threshold computed from the graph itself: when the intersection is too weak, the system declares ignorance rather than hallucinating. The system is not a replacement for LLMs; it is a structural oracle for tasks requiring transparency, auditability, and "I don't know" as a first-class answer.
+This report presents the Invariant Relational Graph (IRG), a deterministic knowledge system where concepts emerge not from statistical accumulation but from topological subtraction. The core thesis: a concept is what remains invariant when you change the subject that observes it through the same relation. This is implemented as a pure count — `invariance(target) = len(incoming[target])` — with no embeddings, no probabilities, no weights. The system answers queries by intersecting neighborhoods in O(deg(A)+deg(B)), avoiding the combinatorial explosion of pathfinding. Architectural honesty is guaranteed by an adaptive threshold computed from the graph itself: when the intersection is too weak, the system declares ignorance rather than hallucinating. The system is not a replacement for LLMs; it is a structural oracle for tasks requiring transparency, auditability, and "I don't know" as a first-class answer.
 
 ---
 
@@ -29,7 +29,7 @@ This report presents the Growing Relational Graph (IRG), a deterministic knowled
    - [4.1 Context Subtracts, It Does Not Add](#41-context-subtracts-it-does-not-add)
    - [4.2 Context as Anchor: Solving Combinatorial Explosion](#42-context-as-anchor-solving-combinatorial-explosion)
 5. [The Algorithm](#5-the-algorithm)
-6. [Structure: The Growing Relational Graph](#6-structure-the-growing-relational-graph)
+6. [Structure: The Invariant Relational Graph](#6-structure-the-growing-relational-graph)
 7. [Emergent Properties](#7-emergent-properties)
    - [7.3 Topological Honesty](#73-topological-honesty)
 8. [Comparison with Large Language Models](#8-comparison-with-large-language-models)
@@ -399,7 +399,7 @@ All three operate with zero weights, zero embeddings, zero floating-point except
 
 ---
 
-## 6. Structure: The Growing Relational Graph
+## 6. Structure: The Invariant Relational Graph
 
 The IRG is a directed multigraph stored as three parallel uint32 arrays (source, relation, destination). Nodes and relations are pure integers; strings exist in a separate multilingual label layer. The graph topology is language-agnostic — the same node can have labels in Italian, English, and Chinese.
 

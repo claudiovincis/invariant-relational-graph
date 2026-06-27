@@ -173,16 +173,16 @@ class CompactEngine:
     def _rel_name(self, rid):
         return self._rel_rev.get(rid, f"rel_{rid}")
     
-    def etichetta(self, nid):
+    def label(self, nid):
         if nid in self._labels:
             return self._labels[nid][1]
         return f"#{nid}"
     
-    def so(self, etichetta):
-        return ("ita", etichetta) in self._id_from_label
+    def has(self, label):
+        return (("ita", label)) in self._id_from_label
     
-    def _id(self, etichetta):
-        return self._id_from_label.get(("ita", etichetta))
+    def _id(self, label):
+        return self._id_from_label.get((("ita", label)))
     
     # ═══════════════ QUERY ═══════════════
     
@@ -194,7 +194,7 @@ class CompactEngine:
         risultato = []
         for i in range(start, end):
             rel = self._rel_name(self._rel[i])
-            dst = self.etichetta(self._dst[i])
+            dst = self.label(self._dst[i])
             risultato.append((rel, dst))
         return risultato
     
@@ -208,7 +208,7 @@ class CompactEngine:
         for i in range(start, end):
             r_nome = self._rel_name(self._rel[i])
             if relazione is None or r_nome == relazione:
-                risultati.append((r_nome, self.etichetta(self._dst[i])))
+                risultati.append((r_nome, self.label(self._dst[i])))
         return risultati
     
     def archi_entranti(self, nid):
@@ -219,7 +219,7 @@ class CompactEngine:
         risultato = []
         for i in range(start, end):
             rel = self._rel_name(self._rel_in[i])
-            src = self.etichetta(self._src_in[i])
+            src = self.label(self._src_in[i])
             risultato.append((src, rel))
         return risultato
     
@@ -256,17 +256,17 @@ def crea_adattatore(mc):
         def _sistema(self):
             return mc._sistema
         
-        def etichetta(self, nid, lang="ita"):
-            return mc.etichetta(nid)
+        def label(self, nid, lang="ita"):
+            return mc.label(nid)
         
         def _rel_name(self, rid):
             return mc._rel_name(rid)
         
-        def so(self, etichetta, lang="ita"):
-            return mc.so(etichetta)
+        def has(self, label, lang="ita"):
+            return mc.has(label)
         
-        def _id(self, etichetta, lang="ita"):
-            return mc._id(etichetta)
+        def _id(self, label, lang="ita"):
+            return mc._id(label)
         
         def edges(self, nid):
             uscenti = {}

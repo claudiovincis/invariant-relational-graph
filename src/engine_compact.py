@@ -30,18 +30,18 @@ class CompactEngine:
         self._in_idx = {}     # nid → (start, end) in _src_in
         
         # labels
-        self._labels = {}  # nid → (lang, testo)
-        self._id_from_label = {}  # (lang, testo) → nid
+        self._labels = {}  # nid → (lang, text)
+        self._id_from_label = {}  # (lang, text) → nid
         
-        # Relazioni
+        # Relations
         self._rel_map = {}
         self._rel_rev = {}
         self._next_rel = 1
         
-        self._sistema = 0
+        self._system = 0
         self._next_id = 1
     
-    # ═══════════════ CARICAMENTO BINARIO OTTIMIZZATO ═══════════════
+    # ═══════════════ OPTIMIZED BINARY LOADING ═══════════════
     
     def load(self, path, build_incoming=True):
         """load da .grf direttamente in array compatti (RAM minima, due passate).
@@ -57,8 +57,8 @@ class CompactEngine:
             # === PASSATA 1: salta nodi, leggi labels + strings ===
             for i in range(n_nodi):
                 f.read(4)  # nid
-                n_archi = struct.unpack("<I", f.read(4))[0]
-                for _ in range(n_archi):
+                n_edges_local = struct.unpack("<I", f.read(4))[0]
+                for _ in range(n_edges_local):
                     f.read(4)  # r_str_id
                     n_dests = struct.unpack("<I", f.read(4))[0]
                     f.read(5 * n_dests)
@@ -86,14 +86,14 @@ class CompactEngine:
             # Risolvi labels
             for nid, lang_id, testo_id in labels_raw:
                 lang = strings[lang_id].decode("utf-8")
-                testo = strings[testo_id].decode("utf-8")
-                self._labels[nid] = (lang, testo)
-                self._id_from_label[(lang, testo)] = nid
+                text = strings[testo_id].decode("utf-8")
+                self._labels[nid] = (lang, text)
+                self._id_from_label[(lang, text)] = nid
             del labels_raw
             
-            for nid, (lang, testo) in self._labels.items():
-                if lang == "sys" and testo == "sistema":
-                    self._sistema = nid
+            for nid, (lang, text) in self._labels.items():
+                if lang == "sys" and text == "system":
+                    self._system = nid
                     break
             
             if n_nodi > 0:
@@ -105,10 +105,10 @@ class CompactEngine:
             
             for i in range(n_nodi):
                 nid = struct.unpack("<I", f.read(4))[0]
-                n_archi = struct.unpack("<I", f.read(4))[0]
+                n_edges_local = struct.unpack("<I", f.read(4))[0]
                 
                 start = len(self._src)
-                for _ in range(n_archi):
+                for _ in range(n_edges_local):
                     r_str_id = struct.unpack("<I", f.read(4))[0]
                     r_nome = strings[r_str_id].decode("utf-8")
                     r_id = self._rel_id(r_nome)
@@ -186,7 +186,7 @@ class CompactEngine:
     
     # ═══════════════ QUERY ═══════════════
     
-    def archi_uscenti(self, nid):
+    def outgoing_edges(self, nid):
         """Restituisce [(rel_nome, dst_nome)] per il nodo."""
         if nid not in self._out_idx:
             return []
@@ -199,7 +199,7 @@ class CompactEngine:
         return risultato
     
     def cerca(self, soggetto, relazione=None):
-        """Cerca fatti: soggetto → [relazione] → ?"""
+        """Search facts: subject → [relazione] → ?"""
         nid = self._id(soggetto)
         if nid is None or nid not in self._out_idx:
             return []
@@ -211,7 +211,7 @@ class CompactEngine:
                 risultati.append((r_nome, self.label(self._dst[i])))
         return risultati
     
-    def archi_entranti(self, nid):
+    def incoming_edges(self, nid):
         """Restituisce [(src_nome, rel_nome)] che puntano al nodo."""
         if nid not in self._in_idx:
             return []
@@ -229,7 +229,7 @@ class CompactEngine:
         return len(self._labels)
     
     @property
-    def n_archi(self):
+    def n_edges(self):
         return len(self._src)
     
     @property
@@ -253,8 +253,8 @@ def crea_adattatore(mc):
             return {nid: {} for nid in mc._labels}
         
         @property
-        def _sistema(self):
-            return mc._sistema
+        def _system(self):
+            return mc._system
         
         def label(self, nid, lang="ita"):
             return mc.label(nid)
@@ -271,9 +271,9 @@ def crea_adattatore(mc):
         def edges(self, nid):
             uscenti = {}
             entranti = {}
-            for rel, dst in mc.archi_uscenti(nid):
+            for rel, dst in mc.outgoing_edges(nid):
                 uscenti.setdefault(mc._rel_map.get(rel, 0), []).append(mc._id(dst))
-            for src, rel in mc.archi_entranti(nid):
+            for src, rel in mc.incoming_edges(nid):
                 entranti.setdefault(mc._rel_map.get(rel, 0), []).append(mc._id(src))
             return uscenti, entranti
     

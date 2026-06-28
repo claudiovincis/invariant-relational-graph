@@ -121,7 +121,7 @@ class CompactEngineTrain(CompactEngine):
                 f.write(struct.pack("<I", nid))
                 start, end = self._out_idx[nid]
                 
-                # Raccogli edges per questo nodo: (rel, [(dst, flags)])
+                # Collect edges for this node: (rel, [(dst, flags)])
                 edges = {}
                 for i in range(start, end):
                     r = self._rel[i]
@@ -139,16 +139,16 @@ class CompactEngineTrain(CompactEngine):
                     for d, fl in dests:
                         f.write(struct.pack("<IB", d, fl))
             
-            # Labels (ALL, anche nodi senza edges uscenti)
+            # Labels (ALL, including nodes without outgoing edges)
             et_flat = []
-            for nid, (lang, testo) in self._labels.items():
-                et_flat.append((nid, lang, testo))
+            for nid, (lang, text) in self._labels.items():
+                et_flat.append((nid, lang, text))
             
             f.write(struct.pack("<I", len(et_flat)))
-            for nid, lang, testo in et_flat:
+            for nid, lang, text in et_flat:
                 f.write(struct.pack("<I", nid))
                 lang_id = _add_str(lang)
-                testo_id = _add_str(testo)
+                testo_id = _add_str(text)
                 f.write(struct.pack("<II", lang_id, testo_id))
             
             # String table

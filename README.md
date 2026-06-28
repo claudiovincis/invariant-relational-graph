@@ -32,7 +32,7 @@ g.compact()
 
 result = g.ask('what is cat?', language='en')
 for d in result['concepts']['cat']['top_definitions']:
-    print(f\"  cat is {d['concept']} (invariance={d['invarianza']})\")
+    print(f\"  cat is {d['concept']} (invariance={d['invariance']})\")
 
 print()
 ci = g.context_intersection('cat', 'whale', language='en')
@@ -97,9 +97,9 @@ result = g.ask("what is einstein?", language="en")
 
 # result["concepts"]["einstein"]["top_definitions"]:
 # [
-#   {"concept": "nobel prize", "invarianza": 4, "source": "outgoing"},
-#   {"concept": "ulm",         "invarianza": 2, "source": "outgoing"},
-#   {"concept": "relativity",  "invarianza": 2, "source": "outgoing"},
+#   {"concept": "nobel prize", "invariance": 4, "source": "outgoing"},
+#   {"concept": "ulm",         "invariance": 2, "source": "outgoing"},
+#   {"concept": "relativity",  "invariance": 2, "source": "outgoing"},
 # ]
 ```
 

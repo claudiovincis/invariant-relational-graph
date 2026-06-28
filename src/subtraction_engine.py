@@ -199,12 +199,12 @@ class SubtractionEngine:
     @property
     def _concepts_mask(self):
         """Bitset numpy: mask[nid] = True se nid è concetto (§2.2)."""
-        if not hasattr(self, '_cache_concetti_mask'):
+        if not hasattr(self, '_cache_concepts_mask'):
             import numpy as np
             max_id = max(self.g._labels.keys()) + 1 if self.g._labels else 1
             mask = np.zeros(max_id, dtype=bool)
-            for nid, sensi in self.senses.items():
-                if len(sensi) > 1:
+            for nid, senses in self.senses.items():
+                if len(senses) > 1:
                     mask[nid] = True
             self._cache_concepts_mask = mask
         return self._cache_concepts_mask
@@ -225,7 +225,7 @@ class SubtractionEngine:
     
     def _invalidate_cache(self):
         """Invalidate caches after graph modifications."""
-        for attr in ('_cache_concetti_mask', '_cache_concetti', '_cache_inv_array'):
+        for attr in ('_cache_concepts_mask', '_cache_concepts', '_cache_inv_array'):
             if hasattr(self, attr):
                 delattr(self, attr)
         self._in_idx = {}
@@ -369,7 +369,7 @@ class SubtractionEngine:
                     multi_hop_bridge = {
                         "path": [self._text(nid, language) for nid in path_ids],
                         "hop": len(path_ids) - 1,
-                        "invarianza_min": inv_min,
+                        "invariance_min": inv_min,
                     }
                     strength = inv_min / max(min(inv_a, inv_b), 1)
 
@@ -725,7 +725,7 @@ class SubtractionEngine:
                     name = self._text(dst_id)
                     if name not in seen and name != c:
                         seen.add(name)
-                        top.append({"concept": name, "invarianza": inv, "source": src})
+                        top.append({"concept": name, "invariance": inv, "source": src})
                 
                 entry["top_definitions"] = top[:8]
             
@@ -769,7 +769,7 @@ class SubtractionEngine:
                     if name not in seen and name != c:
                         seen.add(name)
                         src = "[context]" if survives else "direct"
-                        top.append({"concept": name, "invarianza": inv, "source": src})
+                        top.append({"concept": name, "invariance": inv, "source": src})
                 
                 entry["top_definitions"] = top[:8]
             
@@ -786,7 +786,7 @@ class SubtractionEngine:
                     connections.append({
                         "with": c2,
                         "shared_count": len(inter["shared"]),
-                        "top_shared": [{"concept": name, "invarianza": inv} 
+                        "top_shared": [{"concept": name, "invariance": inv} 
                                        for name, inv in inter["shared"][:3]],
                         "force": round(inter["strength"], 4),
                     })
@@ -1152,7 +1152,7 @@ class SubtractionEngine:
                 f"'{a_str}' and '{b_str}' share {len(r['shared'])} concepts "
                 f"(strength={strength:.3f} >= threshold={threshold:.3f}).")
 
-    def speak(self, subject_str: str, fatti: list, tipo: str = "cos'è",
+    def speak(self, subject_str: str, facts: list, tipo: str = "cos'è",
               language: str = "en") -> str:
         """Generate natural language response (zero template)."""
         if not facts:
@@ -1267,9 +1267,9 @@ class SubtractionEngine:
             instance.g._next_id = max(instance.g._labels.keys()) + 1 if instance.g._labels else 1
             print(f"  [load] labels compact ok ({_time.time()-_t0:.1f}s)", flush=True)
 
-            n_sensi = struct.unpack('<I', f.read(4))[0]
+            n_senses = struct.unpack('<I', f.read(4))[0]
             instance.senses = defaultdict(set)
-            for _ in range(n_sensi):
+            for _ in range(n_senses):
                 nid, data_len = struct.unpack('<II', f.read(8))
                 s_str = f.read(data_len).decode('utf-8')
                 if s_str:

@@ -8,8 +8,8 @@ A deterministic knowledge system. No embeddings, no probabilities, no weights â€
 
 ```bash
 pip install numpy
-git clone https://github.com/claudiovincis/IRG.git
-cd IRG
+git clone https://github.com/claudiovincis/invariant-relational-graph.git
+cd invariant-relational-graph
 ```
 
 ## Quick Start

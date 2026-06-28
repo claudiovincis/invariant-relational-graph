@@ -21,7 +21,6 @@ This report presents the Invariant Relational Graph (IRG), a deterministic knowl
    - [2.3 Two Senses vs. One Sense: the Experiment](#23-two-senses-vs-one-sense-the-experiment)
    - [2.4 More Senses, More Precision](#24-more-senses-more-precision)
    - [2.5 The Second Sense Solves High Connectivity](#25-the-second-sense-solves-high-connectivity)
-   - [2.6 Experimental Proof: Senses Distinguish Concepts from Functionals](#26-experimental-proof-senses-distinguish-concepts-from-functionals)
 3. [Theoretical Foundations](#3-theoretical-foundations)
    - [3.2.1 The Birth of Senses](#321-the-birth-of-senses-perception-and-reasoning-are-two-separate-layers)
    - [3.2.2 Semantic Compression: From 89 Verbs to 15 Concepts](#322-semantic-compression-from-89-verbs-to-15-concepts)
@@ -232,31 +231,7 @@ One sense only → "is" is a FUNCTIONAL
 
 What counts as a second sense is not fixed. It can be: a category list, a dictionary headword index, an object database, a set of article titles — any independent inventory of "things in the world." The requirement is only that the second sense be **orthogonal** to the first: it must not derive from the same textual co-occurrence.
 
-**Experimental result:** with 100,000 definitions and a title list as the second sense, IRG accuracy on "what is X?" questions rises from 0% to levels comparable with the synthetic dataset. Without the second sense, "cat," "water," and "Rome" all ended up classified as functionals and the system answered "not found" to 100% of tests.
-
-### 2.6 Experimental Proof: Senses Distinguish Concepts from Functionals
-
-The principle was validated on a balanced curriculum of 736 Italian sentences with 215 categories as the second sense. The test covers 34 "what is X?" questions across 6 domains (animals, plants, cities, elements, people, professions, emotions).
-
-**Preliminary result: 88% accuracy (30/34).** This is a proof-of-concept, not a definitive benchmark.
-
-The mechanism is elementary:
-
-```
-"cat" appears in:
-  Sense 1 (text):      "the cat is an animal"        ← edge: cat --[is]--> animal
-  Sense 2 (categories): cat --[category]--> felines   ← edge: cat --[category]--> felines
-  
-  Two senses → "cat" is a REAL CONCEPT
-
-"is" appears in:
-  Sense 1 (text):      "X is Y"                      ← bridge between X and Y
-  Sense 2 (categories): NEVER                        ← no category
-
-  One sense only → "is" is a LINGUISTIC FUNCTIONAL
-```
-
-**No formula is needed.** No out_degree. No in_degree. No diversity. The operational definition of "concept" is: **appears in more than one sense**. If yes, it is a concept. If no, it is a functional.
+The operational definition of "concept" is: **appears in more than one sense**. If yes, it is a concept. If no, it is a functional. This has been verified on synthetic test suites; large-scale benchmarking with real-world data is future work.
 
 ---
 
